@@ -1,25 +1,38 @@
 const fs = require('fs');
 const path = require('path');
 
-// data/oyunlar.json dosyasının tam yolunu alıyoruz
-const dosyaYolu = path.join(__dirname, '../../data/oyunlar.json');
+const oyunlarYolu = path.join(__dirname, '../../data/oyunlar.json');
+const kullanicilarYolu = path.join(__dirname, '../../data/kullanicilar.json');
 
-// Dosyadaki oyunları okuyup array olarak döndürür
+// Oyun işlemleri
 const oyunlariOku = () => {
   try {
-    const veri = fs.readFileSync(dosyaYolu, 'utf-8');
-    return JSON.parse(veri);
+    return JSON.parse(fs.readFileSync(oyunlarYolu, 'utf-8'));
   } catch (error) {
     return [];
   }
 };
 
-// Yeni veya güncellenen oyun listesini dosyaya yazar
 const oyunlariKaydet = (oyunlar) => {
-  fs.writeFileSync(dosyaYolu, JSON.stringify(oyunlar, null, 2), 'utf-8');
+  fs.writeFileSync(oyunlarYolu, JSON.stringify(oyunlar, null, 2), 'utf-8');
+};
+
+// Kullanıcı işlemleri
+const kullanicilariOku = () => {
+  try {
+    return JSON.parse(fs.readFileSync(kullanicilarYolu, 'utf-8'));
+  } catch (error) {
+    return [];
+  }
+};
+
+const kullanicilariKaydet = (kullanicilar) => {
+  fs.writeFileSync(kullanicilarYolu, JSON.stringify(kullanicilar, null, 2), 'utf-8');
 };
 
 module.exports = {
   oyunlariOku,
-  oyunlariKaydet
+  oyunlariKaydet,
+  kullanicilariOku,
+  kullanicilariKaydet
 };

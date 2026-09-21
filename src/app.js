@@ -1,17 +1,19 @@
 const express = require('express');
 const logger = require('./middleware/logger');
 const oyunRoutes = require('./routes/oyunRoutes');
+const kullaniciRoutes = require('./routes/kullaniciRoutes');
 
 const app = express();
 
-// 1. Body Parser Middleware (Gelen JSON verisini okumak için)
+// Body Parser Middleware (Gelen JSON verisini okumak için)
 app.use(express.json());
 
-// 2. Özel Logger Middleware
+// Özel Logger Middleware
 app.use(logger);
 
-// 3. Oyun Route Bağlama
+// Oyun ve User Route Bağlama
 app.use('/oyunlar', oyunRoutes);
+app.use('/kullanicilar', kullaniciRoutes);
 
 // 4. Tanımsız rotalar için 404 handler
 app.use((req, res) => {
