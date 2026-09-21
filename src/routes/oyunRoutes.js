@@ -3,28 +3,49 @@ const router = express.Router();
 const { oyunlariOku, oyunlariKaydet } = require('../utils/dosya');
 const oyunDogrula = require('../middleware/dogrula');
 
-// 1. GET /oyunlar - Tüm oyunları listele veya arama yap (Query filtering)
+// 1. GET /oyunlar - Listeleme, Arama ve Sayfalama (Pagination)
 router.get('/', (req, res) => {
   let oyunlar = oyunlariOku();
-  const { ara, tur } = req.query;
+  const { ara, tur, sayfa, limit } = req.query;
 
-  // İsimle arama: /oyunlar?ara=witcher
+  // Arama filtresi
   if (ara) {
     oyunlar = oyunlar.filter(o => 
       o.ad.toLowerCase().includes(ara.toLowerCase())
     );
   }
 
-  // Türe göre filtreleme: /oyunlar?tur=RPG
+  // Tür filtresi
   if (tur) {
     oyunlar = oyunlar.filter(o => 
       o.tur.toLowerCase() === tur.toLowerCase()
     );
   }
 
+  const toplamKayit = oyunlar.length;
+
+  // Sayfalama (Pagination) mantığı
+  if (sayfa || limit) {
+    const aktifSayfa = parseInt(sayfa) || 1;
+    const sayfaBasiLimit = parseInt(limit) || 2;
+    const baslangicIndex = (aktifSayfa - 1) * sayfaBasiLimit;
+    const bitisIndex = baslangicIndex + sayfaBasiLimit;
+
+    oyunlar = oyunlar.slice(baslangicIndex, bitisIndex);
+
+    return res.status(200).json({
+      basarili: true,
+      toplamKayit,
+      aktifSayfa,
+      sayfaBasiLimit,
+      toplamSayfa: Math.ceil(toplamKayit / sayfaBasiLimit),
+      veri: oyunlar
+    });
+  }
+
   res.status(200).json({
     basarili: true,
-    toplam: oyunlar.length,
+    toplamKayit,
     veri: oyunlar
   });
 });
